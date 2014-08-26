@@ -1,0 +1,42 @@
+heat_template_version: 2013-05-23
+
+description: >
+  Creates a block storage server
+
+parameters:
+
+  instance_type:
+    type: string
+    description: Instance type
+    default: baremetal
+    constraints:
+      - allowed_values: [baremetal, m1.large]
+        description: instance_type must be one of baremetal, m1.large
+
+  image_id:
+    type: string
+    description: ID of the image to use
+
+  neutron-network-type:
+    type: string
+    description: Neutron network type to use
+    default: gre
+
+  neutron-enable-tunneling:
+    type: string
+    description: Should tunneling be enabled in Neutron
+    default: 'true'
+
+
+resources:
+  block_storage_server:
+    type: OS::Nova::Server
+    properties:
+      image: { get_param: image_id }
+      flavor: { get_param: instance_type }
+
+
+outputs:
+  ip:
+    description: IP of the created instance
+    value: { get_attr: [block_storage_server, first_address] }
